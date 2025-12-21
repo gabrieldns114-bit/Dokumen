@@ -16,6 +16,10 @@
             background: white; display: flex; justify-content: center;
             align-items: center; z-index: 100;
         }
+        /* Style Baris Data */
+        .col-tiket { color: #4b5563; font-weight: 700; } 
+        .col-bayar { color: #059669; font-weight: 800; }
+        .header-bold { font-weight: 900 !important; color: #1f2937 !important; }
     </style>
 </head>
 <body class="pb-10">
@@ -59,7 +63,7 @@
             </div>
         </div>
 
-        <!-- Form Input (Muncul Setelah Login) -->
+        <!-- Form Input -->
         <div id="formSection" class="admin-panel mb-8 animate-in fade-in duration-500">
             <div class="bg-white p-6 rounded shadow-md border-t-4 border-blue-600">
                 <h2 class="text-lg font-bold mb-4 text-gray-800 border-b pb-2 uppercase text-sm">Input Peserta</h2>
@@ -85,15 +89,15 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-100 text-[10px] font-bold text-gray-500 uppercase">
-                            <th class="p-4 border-b">Nama & Alamat</th>
-                            <th class="p-4 border-b text-right">Tiket</th>
-                            <th class="p-4 border-b text-right">Dibayar</th>
-                            <th class="p-4 border-b text-center">Status</th>
-                            <th id="thAksi" class="p-4 border-b text-center admin-panel">Aksi</th>
+                        <tr class="bg-gray-200 text-[12px] text-gray-800 uppercase tracking-wider">
+                            <th class="p-4 border-b header-bold">Nama & Alamat</th>
+                            <th class="p-4 border-b text-right header-bold">Tiket</th>
+                            <th class="p-4 border-b text-right header-bold">Dibayar</th>
+                            <th class="p-4 border-b text-center header-bold">Status Sisa</th>
+                            <th id="thAksi" class="p-4 border-b text-center admin-panel header-bold">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelBody" class="divide-y text-sm">
+                    <tbody id="tabelBody" class="divide-y text-[13px]">
                         <!-- Data otomatis muncul di sini -->
                     </tbody>
                 </table>
@@ -124,14 +128,12 @@
         const auth = getAuth(app);
         let isAdmin = false;
 
-        // Start App
         window.addEventListener('DOMContentLoaded', async () => {
             await signInAnonymously(auth);
             loadCloudData();
             setTimeout(() => document.getElementById('loader').style.display = 'none', 1000);
         });
 
-        // Login Handler
         document.getElementById('authBtn').onclick = () => {
             if(!isAdmin) {
                 const p = prompt("Masukkan Password Admin:");
@@ -184,23 +186,26 @@
                 const lunas = sisa <= 0;
 
                 const row = `
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr class="hover:bg-gray-50 transition border-b border-gray-100">
                         <td class="p-4">
-                            <div class="font-bold text-gray-800 uppercase text-xs">${p.nama}</div>
-                            <div class="text-[10px] text-gray-400 uppercase font-medium">${p.alamat}</div>
+                            <div class="font-extrabold text-gray-900 uppercase leading-tight">${p.nama}</div>
+                            <div class="text-[11px] text-gray-500 font-bold uppercase tracking-wide mt-0.5">${p.alamat}</div>
                         </td>
-                        <td class="p-4 text-right text-gray-500 font-medium">${formatIDR(p.tagihan || 250000)}</td>
+                        <td class="p-4 text-right col-tiket">${formatIDR(p.tagihan || 250000)}</td>
                         <td class="p-4 text-right">
-                            ${isAdmin ? `<button onclick="editBayar('${p.id}', ${p.bayar})" class="text-blue-600 font-bold hover:underline">${formatIDR(p.bayar)}</button>` : `<span class="font-bold text-gray-800">${formatIDR(p.bayar)}</span>`}
+                            ${isAdmin ? 
+                                `<button onclick="editBayar('${p.id}', ${p.bayar})" class="col-bayar hover:underline underline-offset-4 decoration-2">${formatIDR(p.bayar)}</button>` : 
+                                `<span class="col-bayar">${formatIDR(p.bayar)}</span>`
+                            }
                         </td>
                         <td class="p-4 text-center">
-                            <span class="px-3 py-1 rounded text-[9px] font-black uppercase ${lunas ? 'status-lunas' : 'status-belum'}">
+                            <span class="px-3 py-1.5 rounded text-[11px] font-black uppercase inline-block min-w-[120px] shadow-sm ${lunas ? 'status-lunas' : 'status-belum'}">
                                 ${lunas ? 'LUNAS' : 'SISA ' + formatIDR(sisa)}
                             </span>
                         </td>
                         ${isAdmin ? `
                         <td class="p-4 text-center">
-                            <button onclick="hapusData('${p.id}')" class="text-red-400 hover:text-red-600 text-lg">🗑️</button>
+                            <button onclick="hapusData('${p.id}')" class="text-red-300 hover:text-red-600 transition-colors text-lg">🗑️</button>
                         </td>` : ''}
                     </tr>
                 `;
@@ -212,7 +217,6 @@
             return 'Rp ' + n.toLocaleString('id-ID');
         }
 
-        // Action Handlers
         document.getElementById('btnSimpan').onclick = async () => {
             const nama = document.getElementById('inNama').value;
             const alamat = document.getElementById('inAlamat').value;
@@ -233,7 +237,7 @@
 
         window.editBayar = async (id, current) => {
             if(!isAdmin) return;
-            const val = prompt("Update jumlah bayar:", current);
+            const val = prompt("Update jumlah bayar (masukkan angka saja):", current);
             if(val !== null && !isNaN(val)) {
                 await updateDoc(doc(db, "artifacts", "ziarah-komusla-v2", "public", "data", "peserta", id), {
                     bayar: Number(val)
@@ -243,7 +247,7 @@
 
         window.hapusData = async (id) => {
             if(!isAdmin) return;
-            if(confirm("Hapus data ini?")) {
+            if(confirm("Hapus data peserta ini secara permanen dari cloud?")) {
                 await deleteDoc(doc(db, "artifacts", "ziarah-komusla-v2", "public", "data", "peserta", id));
             }
         };
