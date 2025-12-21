@@ -6,109 +6,145 @@
     <title>Sistem Data Ziarah Komusla</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .status-lunas { background-color: #def7ec; color: #03543f; border: 1px solid #84e1bc; }
-        .status-belum { background-color: #fde8e8; color: #9b1c1c; border: 1px solid #f8b4b4; }
+        /* Background putih murni untuk seluruh body */
+        body { 
+            background-color: #ffffff; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            color: #1a1a1a;
+        }
+        
+        /* Status dengan warna solid tanpa transparansi */
+        .status-lunas { 
+            background-color: #10b981; 
+            color: #ffffff; 
+            border: none; 
+        }
+        .status-belum { 
+            background-color: #ef4444; 
+            color: #ffffff; 
+            border: none; 
+        }
+        
         .admin-panel { display: none; }
         .is-admin .admin-panel { display: block; }
+        
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; display: flex; justify-content: center;
+            background: #ffffff; display: flex; justify-content: center;
             align-items: center; z-index: 100;
         }
-        /* Style Baris Data */
-        .col-tiket { color: #4b5563; font-weight: 700; } 
-        .col-bayar { color: #059669; font-weight: 800; }
-        .header-bold { font-weight: 900 !important; color: #1f2937 !important; }
+
+        /* Penegasan Font sesuai permintaan sebelumnya */
+        .header-bold { 
+            font-weight: 900 !important; 
+            color: #000000 !important;
+            background-color: #f9fafb; /* Abu sangat muda untuk pemisah header */
+        }
+        
+        .row-nama { font-weight: 800; color: #000000; }
+        .row-nominal { font-weight: 700; color: #1a1a1a; }
+        
+        /* Border solid untuk tabel */
+        table { border: 1px solid #e5e7eb; }
     </style>
 </head>
-<body class="pb-10">
+<body class="pb-20">
 
     <!-- Loading Screen -->
     <div id="loader">
         <div class="text-center">
-            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700 mx-auto"></div>
-            <p class="mt-4 text-gray-500 font-bold text-xs uppercase tracking-widest">Memuat Data Cloud...</p>
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600 mx-auto"></div>
+            <p class="mt-4 text-black font-bold text-xs uppercase tracking-widest">Sinkronisasi Cloud...</p>
         </div>
     </div>
 
-    <!-- Header Biru Klasik -->
-    <header class="bg-blue-700 text-white py-6 shadow-md mb-6">
-        <div class="container mx-auto px-4 flex justify-between items-center max-w-4xl">
+    <!-- Header Biru Solid -->
+    <header class="bg-blue-800 text-white py-8 shadow-sm mb-8">
+        <div class="container mx-auto px-4 flex justify-between items-center max-w-5xl">
             <div>
-                <h1 class="text-xl font-bold uppercase tracking-tight">Data Peserta Ziarah Komusla</h1>
-                <p class="text-xs opacity-80">by Reydns Official (KOMUSLA)</p>
+                <h1 class="text-2xl font-black uppercase tracking-tighter">DATA ZIARAH KOMUSLA</h1>
+                <p class="text-[10px] font-medium tracking-widest opacity-90 mt-1">SISTEM MONITORING REAL-TIME</p>
             </div>
-            <button id="authBtn" class="bg-yellow-400 text-blue-900 px-4 py-1.5 rounded font-bold text-xs hover:bg-yellow-500 transition shadow">
+            <button id="authBtn" class="bg-white text-blue-800 px-6 py-2 rounded-full font-black text-xs hover:bg-gray-100 transition-all uppercase tracking-wider">
                 LOGIN ADMIN
             </button>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 max-w-4xl">
+    <main class="container mx-auto px-4 max-w-5xl">
         
-        <!-- Dashboard Statistik -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-4 rounded shadow-sm border-l-4 border-blue-600">
-                <p class="text-[10px] text-gray-400 font-bold uppercase">Total Peserta</p>
-                <h3 id="statTotal" class="text-2xl font-bold text-gray-800">0</h3>
+        <!-- Dashboard Statistik - Latar Putih Solid dengan Border -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-xl border-2 border-gray-100 shadow-sm">
+                <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Total Peserta</p>
+                <h3 id="statTotal" class="text-3xl font-black text-black">0</h3>
             </div>
-            <div class="bg-white p-4 rounded shadow-sm border-l-4 border-green-600">
-                <p class="text-[10px] text-gray-400 font-bold uppercase">Dana Terkumpul</p>
-                <h3 id="statDana" class="text-2xl font-bold text-green-700">Rp 0</h3>
+            <div class="bg-white p-6 rounded-xl border-2 border-gray-100 shadow-sm">
+                <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Total Terbayar</p>
+                <h3 id="statDana" class="text-3xl font-black text-green-600">Rp 0</h3>
             </div>
-            <div class="bg-white p-4 rounded shadow-sm border-l-4 border-red-600">
-                <p class="text-[10px] text-gray-400 font-bold uppercase">Kekurangan</p>
-                <h3 id="statSisa" class="text-2xl font-bold text-red-600">Rp 0</h3>
+            <div class="bg-white p-6 rounded-xl border-2 border-gray-100 shadow-sm">
+                <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Sisa Tagihan</p>
+                <h3 id="statSisa" class="text-3xl font-black text-red-600">Rp 0</h3>
             </div>
         </div>
 
-        <!-- Form Input -->
-        <div id="formSection" class="admin-panel mb-8 animate-in fade-in duration-500">
-            <div class="bg-white p-6 rounded shadow-md border-t-4 border-blue-600">
-                <h2 class="text-lg font-bold mb-4 text-gray-800 border-b pb-2 uppercase text-sm">Input Peserta</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="inNama" placeholder="Nama Lengkap" class="p-2 border rounded outline-none focus:ring-1 focus:ring-blue-500">
-                    <input type="text" id="inAlamat" placeholder="Alamat/Lingkungan" class="p-2 border rounded outline-none focus:ring-1 focus:ring-blue-500">
-                    <input type="number" id="inTagihan" value="250000" placeholder="Harga Tiket" class="p-2 border rounded outline-none focus:ring-1 focus:ring-blue-500">
-                    <input type="number" id="inBayar" value="0" placeholder="Sudah Dibayar" class="p-2 border rounded outline-none focus:ring-1 focus:ring-blue-500">
+        <!-- Form Input Admin -->
+        <div id="formSection" class="admin-panel mb-10">
+            <div class="bg-white p-8 rounded-xl border-2 border-blue-600">
+                <h2 class="text-sm font-black mb-6 text-blue-800 uppercase tracking-widest border-b-2 border-blue-50 py-2">Tambah Peserta Baru</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase">Nama Lengkap</label>
+                        <input type="text" id="inNama" class="w-full p-3 border-2 border-gray-100 rounded-lg outline-none focus:border-blue-600 font-bold">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase">Lingkungan / Alamat</label>
+                        <input type="text" id="inAlamat" class="w-full p-3 border-2 border-gray-100 rounded-lg outline-none focus:border-blue-600 font-bold">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase">Harga Tiket</label>
+                        <input type="number" id="inTagihan" value="250000" class="w-full p-3 border-2 border-gray-100 rounded-lg outline-none focus:border-blue-600 font-bold">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase">Pembayaran Awal</label>
+                        <input type="number" id="inBayar" value="0" class="w-full p-3 border-2 border-gray-100 rounded-lg outline-none focus:border-blue-600 font-bold">
+                    </div>
                 </div>
-                <button id="btnSimpan" class="mt-4 w-full bg-blue-700 text-white font-bold py-3 rounded hover:bg-blue-800 transition shadow-lg uppercase text-sm tracking-widest">Simpan Data ke Cloud</button>
+                <button id="btnSimpan" class="mt-8 w-full bg-blue-800 text-white font-black py-4 rounded-lg hover:bg-black transition-all uppercase text-xs tracking-[0.2em]">Simpan Data Peserta</button>
             </div>
         </div>
 
         <!-- Tabel Data -->
-        <div class="bg-white rounded shadow-md overflow-hidden">
-            <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-                <h2 class="font-bold text-gray-700 uppercase text-xs">Daftar Peserta</h2>
+        <div class="bg-white rounded-xl overflow-hidden border-2 border-gray-100 shadow-sm">
+            <div class="p-5 bg-white border-b-2 border-gray-100 flex justify-between items-center">
+                <h2 class="font-black text-black uppercase text-xs tracking-widest">Database Peserta</h2>
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-gray-400">CLOUD SYNC</span>
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-tighter italic">Secured by Cloud Firestore</span>
                 </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-200 text-[12px] text-gray-800 uppercase tracking-wider">
-                            <th class="p-4 border-b header-bold">Nama & Alamat</th>
-                            <th class="p-4 border-b text-right header-bold">Tiket</th>
-                            <th class="p-4 border-b text-right header-bold">Dibayar</th>
-                            <th class="p-4 border-b text-center header-bold">Status Sisa</th>
-                            <th id="thAksi" class="p-4 border-b text-center admin-panel header-bold">Aksi</th>
+                        <tr class="text-[11px] uppercase tracking-widest">
+                            <th class="p-5 header-bold">Nama & Alamat</th>
+                            <th class="p-5 text-right header-bold">Tiket</th>
+                            <th class="p-5 text-right header-bold">Dibayar</th>
+                            <th class="p-5 text-center header-bold">Status Pembayaran</th>
+                            <th class="p-5 text-center admin-panel header-bold">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelBody" class="divide-y text-[13px]">
-                        <!-- Data otomatis muncul di sini -->
+                    <tbody id="tabelBody" class="divide-y-2 divide-gray-50 text-[14px]">
+                        <!-- JS Render -->
                     </tbody>
                 </table>
             </div>
-            <div id="emptyMsg" class="p-10 text-center text-gray-400 text-xs italic hidden">
-                Belum ada data peserta tersimpan...
+            <div id="emptyMsg" class="p-20 text-center text-gray-300 text-xs font-bold uppercase tracking-widest hidden">
+                Database Kosong
             </div>
         </div>
     </main>
 
-    <!-- Firebase Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -131,22 +167,21 @@
         window.addEventListener('DOMContentLoaded', async () => {
             await signInAnonymously(auth);
             loadCloudData();
-            setTimeout(() => document.getElementById('loader').style.display = 'none', 1000);
+            setTimeout(() => document.getElementById('loader').style.display = 'none', 800);
         });
 
         document.getElementById('authBtn').onclick = () => {
             if(!isAdmin) {
-                const p = prompt("Masukkan Password Admin:");
+                const p = prompt("Password Admin:");
                 if(p === "komusla2024") {
                     isAdmin = true;
                     document.body.classList.add('is-admin');
-                    document.getElementById('authBtn').innerText = "LOGOUT ADMIN";
-                    document.getElementById('authBtn').className = "bg-red-500 text-white px-4 py-1.5 rounded font-bold text-xs shadow";
+                    document.getElementById('authBtn').innerText = "KELUAR ADMIN";
+                    document.getElementById('authBtn').classList.replace('bg-white', 'bg-red-600');
+                    document.getElementById('authBtn').classList.replace('text-blue-800', 'text-white');
                     renderTabel();
-                } else if(p !== null) { alert("Password Salah!"); }
-            } else {
-                location.reload();
-            }
+                } else if(p !== null) { alert("Salah!"); }
+            } else { location.reload(); }
         };
 
         let localData = [];
@@ -162,11 +197,9 @@
         }
 
         function updateStats() {
-            const totalP = localData.length;
             const totalD = localData.reduce((acc, curr) => acc + (curr.bayar || 0), 0);
             const totalT = localData.reduce((acc, curr) => acc + (curr.tagihan || 250000), 0);
-            
-            document.getElementById('statTotal').innerText = totalP;
+            document.getElementById('statTotal').innerText = localData.length;
             document.getElementById('statDana').innerText = formatIDR(totalD);
             document.getElementById('statSisa').innerText = formatIDR(totalT - totalD);
         }
@@ -174,57 +207,45 @@
         function renderTabel() {
             const tbody = document.getElementById('tabelBody');
             tbody.innerHTML = '';
-            
-            if(localData.length === 0) {
-                document.getElementById('emptyMsg').classList.remove('hidden');
-                return;
-            }
+            if(localData.length === 0) { document.getElementById('emptyMsg').classList.remove('hidden'); return; }
             document.getElementById('emptyMsg').classList.add('hidden');
 
             localData.forEach(p => {
                 const sisa = (p.tagihan || 250000) - (p.bayar || 0);
                 const lunas = sisa <= 0;
-
                 const row = `
-                    <tr class="hover:bg-gray-50 transition border-b border-gray-100">
-                        <td class="p-4">
-                            <div class="font-extrabold text-gray-900 uppercase leading-tight">${p.nama}</div>
-                            <div class="text-[11px] text-gray-500 font-bold uppercase tracking-wide mt-0.5">${p.alamat}</div>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="p-5">
+                            <div class="row-nama uppercase tracking-tight">${p.nama}</div>
+                            <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest">${p.alamat}</div>
                         </td>
-                        <td class="p-4 text-right col-tiket">${formatIDR(p.tagihan || 250000)}</td>
-                        <td class="p-4 text-right">
+                        <td class="p-5 text-right font-bold text-gray-400">${formatIDR(p.tagihan || 250000)}</td>
+                        <td class="p-5 text-right">
                             ${isAdmin ? 
-                                `<button onclick="editBayar('${p.id}', ${p.bayar})" class="col-bayar hover:underline underline-offset-4 decoration-2">${formatIDR(p.bayar)}</button>` : 
-                                `<span class="col-bayar">${formatIDR(p.bayar)}</span>`
+                                `<button onclick="editBayar('${p.id}', ${p.bayar})" class="text-blue-700 font-black hover:underline">${formatIDR(p.bayar)}</button>` : 
+                                `<span class="row-nominal text-green-700">${formatIDR(p.bayar)}</span>`
                             }
                         </td>
-                        <td class="p-4 text-center">
-                            <span class="px-3 py-1.5 rounded text-[11px] font-black uppercase inline-block min-w-[120px] shadow-sm ${lunas ? 'status-lunas' : 'status-belum'}">
+                        <td class="p-5 text-center">
+                            <span class="px-4 py-2 rounded-md text-[10px] font-black uppercase tracking-[0.1em] inline-block min-w-[130px] ${lunas ? 'status-lunas' : 'status-belum'}">
                                 ${lunas ? 'LUNAS' : 'SISA ' + formatIDR(sisa)}
                             </span>
                         </td>
-                        ${isAdmin ? `
-                        <td class="p-4 text-center">
-                            <button onclick="hapusData('${p.id}')" class="text-red-300 hover:text-red-600 transition-colors text-lg">🗑️</button>
-                        </td>` : ''}
+                        ${isAdmin ? `<td class="p-5 text-center"><button onclick="hapusData('${p.id}')" class="grayscale hover:grayscale-0 opacity-50 hover:opacity-100">🗑️</button></td>` : ''}
                     </tr>
                 `;
                 tbody.innerHTML += row;
             });
         }
 
-        function formatIDR(n) {
-            return 'Rp ' + n.toLocaleString('id-ID');
-        }
+        function formatIDR(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
 
         document.getElementById('btnSimpan').onclick = async () => {
             const nama = document.getElementById('inNama').value;
             const alamat = document.getElementById('inAlamat').value;
             const tagihan = Number(document.getElementById('inTagihan').value);
             const bayar = Number(document.getElementById('inBayar').value);
-
-            if(!nama || !alamat) return alert("Isi Nama & Alamat!");
-
+            if(!nama || !alamat) return alert("Data belum lengkap!");
             try {
                 await addDoc(collection(db, "artifacts", "ziarah-komusla-v2", "public", "data", "peserta"), {
                     nama, alamat, tagihan, bayar, createdAt: Date.now()
@@ -232,22 +253,18 @@
                 document.getElementById('inNama').value = '';
                 document.getElementById('inAlamat').value = '';
                 document.getElementById('inBayar').value = '0';
-            } catch(e) { alert("Gagal Simpan!"); }
+            } catch(e) { alert("Error!"); }
         };
 
         window.editBayar = async (id, current) => {
-            if(!isAdmin) return;
-            const val = prompt("Update jumlah bayar (masukkan angka saja):", current);
+            const val = prompt("Update Pembayaran:", current);
             if(val !== null && !isNaN(val)) {
-                await updateDoc(doc(db, "artifacts", "ziarah-komusla-v2", "public", "data", "peserta", id), {
-                    bayar: Number(val)
-                });
+                await updateDoc(doc(db, "artifacts", "ziarah-komusla-v2", "public", "data", "peserta", id), { bayar: Number(val) });
             }
         };
 
         window.hapusData = async (id) => {
-            if(!isAdmin) return;
-            if(confirm("Hapus data peserta ini secara permanen dari cloud?")) {
+            if(confirm("Hapus data ini?")) {
                 await deleteDoc(doc(db, "artifacts", "ziarah-komusla-v2", "public", "data", "peserta", id));
             }
         };
